@@ -460,19 +460,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Home\\.nuget\\packages\\": {}
+    "C:\\Users\\Saira\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Proyecto\\ADSProject\\ADSProject\\ADSProject.csproj",
+      "projectUniqueName": "C:\\Users\\Saira\\Downloads\\ADSProject\\ADSProject\\ADSProject\\ADSProject.csproj",
       "projectName": "ADSProject",
-      "projectPath": "C:\\Proyecto\\ADSProject\\ADSProject\\ADSProject.csproj",
-      "packagesPath": "C:\\Users\\Home\\.nuget\\packages\\",
-      "outputPath": "C:\\Proyecto\\ADSProject\\ADSProject\\obj\\",
+      "projectPath": "C:\\Users\\Saira\\Downloads\\ADSProject\\ADSProject\\ADSProject\\ADSProject.csproj",
+      "packagesPath": "C:\\Users\\Saira\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Saira\\Downloads\\ADSProject\\ADSProject\\ADSProject\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Home\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Saira\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -526,7 +526,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.300-preview.23122.5\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -9,11 +9,17 @@ namespace ADSProject.Controllers
     public class EstudiantesController : ControllerBase
     {
         private readonly IEstudiante estudiante;
-        private const string COD_EXITO = "000000"; // Código de éxito
-        private const string COD_ERROR = "999999"; // Código de error
+        // Código de éxito
+        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
+       
+        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
+
+      
         private string pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
+
+        public static string COD_EXITO1 => COD_EXITO;
 
         public EstudiantesController(IEstudiante estudiante)
         {
@@ -31,7 +37,7 @@ namespace ADSProject.Controllers
                 if (contador > 0)
                 {
                     // Si el contador es mayor que cero, la operación fue exitosa
-                    pCodRespuesta = COD_EXITO;
+                    pCodRespuesta = COD_EXITO1;
                     pMensajeUsuario = "Registro insertado con éxito";
                 }
                 else
@@ -64,7 +70,7 @@ namespace ADSProject.Controllers
                 if (contador > 0)
                 {
                     // Si el contador es mayor que cero, la operación fue exitosa
-                    pCodRespuesta = COD_EXITO;
+                    pCodRespuesta = COD_EXITO1;
                     pMensajeUsuario = "Registro actualizado con éxito";
                 }
                 else
@@ -100,7 +106,7 @@ namespace ADSProject.Controllers
                     estudiante.EliminarEstudiante(idEstudiante);
 
                     // Establecemos los mensajes de éxito
-                    pCodRespuesta = COD_EXITO;
+                    pCodRespuesta = COD_EXITO1;
                     pMensajeUsuario = "Registro eliminado con éxito";
                 }
                 else

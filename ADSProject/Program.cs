@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 // Configurando inyección de dependencias
 builder.Services.AddSingleton<IEstudiante, EstudianteRepository>();
 builder.Services.AddSingleton<ICarrera, CarreraRepository>();
-
+builder.Services.AddSingleton<IMateria, MateriaRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

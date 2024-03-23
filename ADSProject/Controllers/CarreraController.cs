@@ -1,102 +1,124 @@
 ﻿using ADSProject.Interfaces;
 using ADSProject.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace ADSProject.Controllers
 {
-    namespace ADSProject.Controllers
+    [Route("api/carreras")]
+    [ApiController]
+    public class CarreraController : ControllerBase
     {
-        [Route("api/carreras")]
-        [ApiController]
-        public class CarreraController : ControllerBase
+        private readonly ICarrera carreraRepository;
+        // Código de éxito
+        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
+
+        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
+        private string pCodRespuesta;
+        private string pMensajeUsuario;
+        private string pMensajeTecnico;
+
+        public CarreraController(ICarrera carreraRepository)
         {
-            private readonly ICarrera carreraRepository;
+            this.carreraRepository = carreraRepository;
+        }
 
-            public CarreraController(ICarrera carreraRepository)
+        [HttpGet]
+        public ActionResult<List<Carrera>> ObtenerTodasLasCarreras()
+        {
+            try
             {
-                this.carreraRepository = carreraRepository;
+                var carreras = carreraRepository.ObtenerTodasLasCarreras();
+                return Ok(carreras);
             }
-
-            [HttpGet]
-            public ActionResult<List<Carrera>> ObtenerTodasLasCarreras()
+            catch (Exception ex)
             {
-                try
-                {
-                    var carreras = carreraRepository.ObtenerTodasLasCarreras();
-                    return Ok(carreras);
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
-                }
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
 
-            [HttpGet("obtenerCarreraPorId/{id}")]
-            public ActionResult<Carrera> ObtenerCarreraPorId(int id)
+        [HttpGet("obtenerCarreraPorId/{id}")]
+        public ActionResult<Carrera> ObtenerCarreraPorId(int id)
+        {
+            try
             {
-                try
+                var carrera = carreraRepository.ObtenerCarreraPorId(id);
+                if (carrera == null)
                 {
-                    var carrera = carreraRepository.ObtenerCarreraPorId(id);
-                    if (carrera == null)
-                    {
-                        return NotFound();
-                    }
-                    return Ok(carrera);
+                    pCodRespuesta = COD_ERROR;
+                    pMensajeUsuario = "No se encontraron datos de la carrera";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+
+                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
-                }
+                return Ok(carrera);
             }
-
-            [HttpPost("agregarCarrera")]
-            public ActionResult<int> AgregarCarrera([FromBody] Carrera carrera)
+            catch (Exception ex)
             {
-                try
-                {
-                    var id = carreraRepository.AgregarCarrera(carrera);
-                    return Ok(id);
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
-                }
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
 
-            [HttpPut("modificarCarrera/{id}")]
-            public ActionResult ActualizarCarrera(int id, [FromBody] Carrera carrera)
+        [HttpPost("agregarCarrera")]
+        public ActionResult<int> AgregarCarrera([FromBody] Carrera carrera)
+        {
+            try
             {
-                try
-                {
-                    var result = carreraRepository.ActualizarCarrera(id, carrera);
-                    if (result == 0)
-                    {
-                        return NotFound();
-                    }
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
-                }
+                var id = carreraRepository.AgregarCarrera(carrera);
+                pCodRespuesta = COD_EXITO;
+                pMensajeUsuario = "Registro insertado con éxito";
+                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+
+                return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-
-            [HttpDelete("eliminarCarrera/{id}")]
-            public ActionResult EliminarCarrera(int id)
+            catch (Exception ex)
             {
-                try
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("modificarCarrera/{id}")]
+        public ActionResult ActualizarCarrera(int id, [FromBody] Carrera carrera)
+        {
+            try
+            {
+                var result = carreraRepository.ActualizarCarrera(id, carrera);
+                if (result == 0)
                 {
-                    var result = carreraRepository.EliminarCarrera(id);
-                    if (!result)
-                    {
-                        return NotFound();
-                    }
-                    return Ok();
+                    pCodRespuesta = COD_ERROR;
+                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+
+                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
-                catch (Exception ex)
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("eliminarCarrera/{id}")]
+        public ActionResult EliminarCarrera(int id)
+        {
+            try
+            {
+                var result = carreraRepository.EliminarCarrera(id);
+                if (!result)
                 {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                    pCodRespuesta = COD_ERROR;
+                    pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+
+                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

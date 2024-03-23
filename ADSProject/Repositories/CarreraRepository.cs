@@ -19,8 +19,8 @@ public class CarreraRepository : ICarrera
         Carrera carreraPorDefecto = new Carrera
         {
             Id = 1,
-            Codigo = "COD_DEF",
-            Nombre = "Carrera por Defecto"
+            Codigo = "I004",
+            Nombre = "Ingeneria de sistema"
         };
         carreras.Add(carreraPorDefecto);
     }
