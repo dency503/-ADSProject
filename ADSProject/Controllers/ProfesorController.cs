@@ -6,29 +6,27 @@ using System.Collections.Generic;
 
 namespace ADSProject.Controllers
 {
-    [Route("api/materias")]
-    public class MateriaController : ControllerBase
+    [Route("api/profesores")]
+    public class ProfesoresController : ControllerBase
     {
-        private readonly IMateria materiaRepository;
-        // Código de éxito
+        private readonly IProfesor _profesor;
         private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
-        // Código de error
         private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
         private string pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public MateriaController(IMateria materiaRepository)
+        public ProfesoresController(IProfesor profesor)
         {
-            this.materiaRepository = materiaRepository;
+            _profesor = profesor;
         }
 
-        [HttpPost("agregarMateria")]
-        public IActionResult AgregarMateria([FromBody] Materia materia)
+        [HttpPost("agregarProfesor")]
+        public IActionResult AdicionarProfesor([FromBody] Profesor profesor)
         {
             try
             {
-                int contador = this.materiaRepository.AgregarMateria(materia);
+                int contador = _profesor.AgregarProfesor(profesor);
 
                 if (contador > 0)
                 {
@@ -45,49 +43,51 @@ namespace ADSProject.Controllers
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
-        [HttpPost("actualizarMateria/{idMateria}")]
-        public ActionResult<string> ActualizarMateria(int idMateria, [FromBody] Materia materia)
+        [HttpPut("actualizarProfesor/{idProfesor}")]
+        public ActionResult<string> ActualizarProfessor(int idProfesor, [FromBody] Profesor profesor)
         {
             try
             {
-                int contador = this.materiaRepository.ActualizarMateria(idMateria, materia);
+                int contador = _profesor.ActualizarProfesor(idProfesor, profesor);
 
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro actualizado con éxito";
+                    pMensajeUsuario = "Registro actualizado con sucesso";
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
+                    pMensajeUsuario = "Ocurrido un problema al actualizar o registro";
                 }
 
                 pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
-        [HttpDelete("eliminarMateria/{idMateria}")]
-        public ActionResult<string> EliminarMateria(int idMateria)
+        [HttpDelete("eliminarProfesor/{idProfesor}")]
+        public ActionResult<string> EliminarProfesor(int idProfesor)
         {
             try
             {
-                bool eliminado = this.materiaRepository.EliminarMateria(idMateria);
+                bool eliminado = true; // Por ahora asumimos que el profesor fue eliminado correctamente
 
                 if (eliminado)
                 {
+                    _profesor.EliminarProfesor(idProfesor);
+
                     pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro eliminado con éxito";
                 }
@@ -101,61 +101,61 @@ namespace ADSProject.Controllers
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
-        [HttpGet("obtenerMateriaPorID/{idMateria}")]
-        public ActionResult<Materia> ObtenerMateriaPorID(int idMateria)
+        [HttpGet("obtenerProfesorPorId/{idProfesor}")]
+        public ActionResult<Profesor> ObtnerProfessorPorId(int idProfesor)
         {
             try
             {
-                Materia materia = this.materiaRepository.ObtenerMateriaPorId(idMateria);
+                Profesor profesor = _profesor.ObtenerProfesorPorId(idProfesor);
 
-                if (materia != null)
+                if (profesor != null)
                 {
-                    return Ok(materia);
+                    return Ok(profesor);
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de la materia";
+                    pMensajeUsuario = "No se encontraron datos del profesor";
                     pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
-        [HttpGet]
-        public ActionResult<List<Materia>> ObtenerMaterias()
+        [HttpGet("obtnerProfesores")]
+        public ActionResult<List<Profesor>> ObterProfesores()
         {
             try
             {
-                List<Materia> materias = this.materiaRepository.ObtenerTodasLasMaterias();
+                List<Profesor> profesores = _profesor.ObtenerTodosLosProfesores();
 
-                if (materias != null && materias.Count > 0)
+                if (profesores != null && profesores.Count > 0)
                 {
-                    return Ok(materias);
+                    return Ok(profesores);
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de materias";
+                    pMensajeUsuario = "No se encontraron datos de profesores";
                     pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
     }

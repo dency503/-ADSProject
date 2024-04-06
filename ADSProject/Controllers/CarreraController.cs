@@ -11,11 +11,9 @@ namespace ADSProject.Controllers
     public class CarreraController : ControllerBase
     {
         private readonly ICarrera carreraRepository;
-        // Código de éxito
-        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
-
-        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
-        private string pCodRespuesta;
+        private static readonly int COD_EXITO = CodigoRespuesta.Exito;
+        private static readonly int COD_ERROR = CodigoRespuesta.Error;
+        private int pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
@@ -30,33 +28,61 @@ namespace ADSProject.Controllers
             try
             {
                 var carreras = carreraRepository.ObtenerTodasLasCarreras();
-                return Ok(carreras);
+                int pCodRespuesta;
+                string pMensajeUsuario, pMensajeTecnico;
+
+                if (carreras.Count > 0)
+                {
+                    pCodRespuesta = COD_EXITO;
+                    pMensajeUsuario = "Carreras obtenidas exitosamente";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+
+                    return Ok( carreras );
+                }
+                else
+                {
+                    pCodRespuesta = COD_ERROR;
+                    pMensajeUsuario = "No se encontraron carreras";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+
+                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
+                }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
         [HttpGet("obtenerCarreraPorId/{id}")]
-        public ActionResult<Carrera> ObtenerCarreraPorId(int id)
+        public ActionResult<int> ObtenerCarreraPorId(int id)
         {
             try
             {
                 var carrera = carreraRepository.ObtenerCarreraPorId(id);
-                if (carrera == null)
+                int pCodRespuesta;
+                string pMensajeUsuario, pMensajeTecnico;
+
+                if (carrera != null)
+                {
+                    pCodRespuesta = COD_EXITO;
+                    pMensajeUsuario = "Datos de la carrera obtenidos con éxito";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+
+                    return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico, carrera });
+                }
+                else
                 {
                     pCodRespuesta = COD_ERROR;
                     pMensajeUsuario = "No se encontraron datos de la carrera";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
-                return Ok(carrera);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
@@ -66,60 +92,96 @@ namespace ADSProject.Controllers
             try
             {
                 var id = carreraRepository.AgregarCarrera(carrera);
-                pCodRespuesta = COD_EXITO;
-                pMensajeUsuario = "Registro insertado con éxito";
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                int pCodRespuesta;
+                string pMensajeUsuario, pMensajeTecnico;
 
-                return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        [HttpPut("modificarCarrera/{id}")]
-        public ActionResult ActualizarCarrera(int id, [FromBody] Carrera carrera)
-        {
-            try
-            {
-                var result = carreraRepository.ActualizarCarrera(id, carrera);
-                if (result == 0)
+                if (id > 0)
+                {
+                    pCodRespuesta = COD_EXITO;
+                    pMensajeUsuario = "Registro insertado con éxito";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+                    return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
+                }
+                else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                    pMensajeUsuario = "Ocurrió un problema al insertar el registro";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
-                return Ok();
+
+            
+
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
 
-        [HttpDelete("eliminarCarrera/{id}")]
-        public ActionResult EliminarCarrera(int id)
+
+        [HttpPut("modificarCarrera/{id}")]
+        public ActionResult<int> ActualizarCarrera(int id, [FromBody] Carrera carrera)
         {
             try
             {
-                var result = carreraRepository.EliminarCarrera(id);
-                if (!result)
+                int contador = carreraRepository.ActualizarCarrera(id, carrera);
+                int pCodRespuesta;
+                string pMensajeUsuario, pMensajeTecnico;
+
+                if (contador > 0)
+                {
+                    pCodRespuesta = COD_EXITO;
+                    pMensajeUsuario = "Registro actualizado con éxito";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+
+                    return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
+                }
+                else { 
+                pCodRespuesta = COD_ERROR;
+                pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
+                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+
+                return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        [HttpDelete("eliminarCarrera/{id}")]
+        public ActionResult<int> EliminarCarrera(int id)
+        {
+            try
+            {
+                Boolean contador = carreraRepository.EliminarCarrera(id);
+                int pCodRespuesta;
+                string pMensajeUsuario, pMensajeTecnico;
+
+                if (contador)
+                {
+                    pCodRespuesta = COD_EXITO;
+                    pMensajeUsuario = "Registro eliminado con éxito"; pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
+                    return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
+                }
+                else
                 {
                     pCodRespuesta = COD_ERROR;
                     pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
-                return Ok();
+                  
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
+
     }
 }
