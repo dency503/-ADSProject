@@ -6,27 +6,27 @@ using System.Collections.Generic;
 
 namespace ADSProject.Controllers
 {
-    [Route("api/profesores")]
-    public class ProfesoresController : ControllerBase
+    [Route("api/grupos")]
+    public class GrupoController : ControllerBase
     {
-        private readonly IProfesor _profesor;
-        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
-        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
-        private string pCodRespuesta;
+        private readonly IGrupo _grupo;
+        private static readonly int COD_EXITO = CodigoRespuesta.Exito;
+        private static readonly int COD_ERROR = CodigoRespuesta.Error;
+        private int pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public ProfesoresController(IProfesor profesor)
+        public GrupoController(IGrupo grupo)
         {
-            _profesor = profesor;
+            _grupo = grupo;
         }
 
-        [HttpPost("agregarProfesor")]
-        public IActionResult AdicionarProfesor([FromBody] Profesor profesor)
+        [HttpPost("agregarGrupo")]
+        public IActionResult AgregarGrupo([FromBody] Grupo grupo)
         {
             try
             {
-                int contador = _profesor.AgregarProfesor(profesor);
+                int contador = _grupo.AgregarGrupo(grupo);
 
                 if (contador > 0)
                 {
@@ -39,7 +39,7 @@ namespace ADSProject.Controllers
                     pMensajeUsuario = "Ocurrió un problema al insertar el registro";
                 }
 
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
@@ -49,25 +49,25 @@ namespace ADSProject.Controllers
             }
         }
 
-        [HttpPut("actualizarProfesor/{idProfesor}")]
-        public ActionResult<string> ActualizarProfessor(int idProfesor, [FromBody] Profesor profesor)
+        [HttpPut("actualizarGrupo/{idGrupo}")]
+        public IActionResult ActualizarGrupo(int idGrupo, [FromBody] Grupo grupo)
         {
             try
             {
-                int contador = _profesor.ActualizarProfesor(idProfesor, profesor);
+                int contador = _grupo.ActualizarGrupo(idGrupo, grupo);
 
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro actualizado con sucesso";
+                    pMensajeUsuario = "Registro actualizado con éxito";
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrido un problema al actualizar o registro";
+                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
                 }
 
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
@@ -77,17 +77,15 @@ namespace ADSProject.Controllers
             }
         }
 
-        [HttpDelete("eliminarProfesor/{idProfesor}")]
-        public ActionResult<string> EliminarProfesor(int idProfesor)
+        [HttpDelete("eliminarGrupo/{idGrupo}")]
+        public IActionResult EliminarGrupo(int idGrupo)
         {
             try
             {
-                bool eliminado = true; // Por ahora asumimos que el profesor fue eliminado correctamente
+                bool eliminado = _grupo.EliminarGrupo(idGrupo);
 
                 if (eliminado)
                 {
-                    _profesor.EliminarProfesor(idProfesor);
-
                     pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro eliminado con éxito";
                 }
@@ -97,7 +95,7 @@ namespace ADSProject.Controllers
                     pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
                 }
 
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
@@ -107,22 +105,22 @@ namespace ADSProject.Controllers
             }
         }
 
-        [HttpGet("obtenerProfesorPorId/{idProfesor}")]
-        public ActionResult<Profesor> ObtnerProfessorPorId(int idProfesor)
+        [HttpGet("obtenerGrupoPorId/{idGrupo}")]
+        public IActionResult ObtenerGrupoPorId(int idGrupo)
         {
             try
             {
-                Profesor profesor = _profesor.ObtenerProfesorPorId(idProfesor);
+                Grupo grupo = _grupo.ObtenerGrupoPorId(idGrupo);
 
-                if (profesor != null)
+                if (grupo != null)
                 {
-                    return Ok(profesor);
+                    return Ok(grupo);
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos del profesor";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                    pMensajeUsuario = "No se encontraron datos del grupo";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
@@ -133,22 +131,22 @@ namespace ADSProject.Controllers
             }
         }
 
-        [HttpGet("obtnerProfesores")]
-        public ActionResult<List<Profesor>> ObterProfesores()
+        [HttpGet()]
+        public IActionResult ObtenerTodosLosGrupos()
         {
             try
             {
-                List<Profesor> profesores = _profesor.ObtenerTodosLosProfesores();
+                List<Grupo> grupos = _grupo.ObtenerTodosLosGrupos();
 
-                if (profesores != null && profesores.Count > 0)
+                if (grupos != null && grupos.Count > 0)
                 {
-                    return Ok(profesores);
+                    return Ok(grupos);
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de profesores";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
+                    pMensajeUsuario = "No se encontraron datos de grupos";
+                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
 
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
