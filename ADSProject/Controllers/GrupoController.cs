@@ -26,6 +26,10 @@ namespace ADSProject.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 int contador = _grupo.AgregarGrupo(grupo);
 
                 if (contador > 0)
@@ -54,6 +58,10 @@ namespace ADSProject.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 int contador = _grupo.ActualizarGrupo(idGrupo, grupo);
 
                 if (contador > 0)

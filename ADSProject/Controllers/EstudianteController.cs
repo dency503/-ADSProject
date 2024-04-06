@@ -19,7 +19,7 @@ namespace ADSProject.Controllers
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public static int COD_EXITO1 => COD_EXITO;
+
 
         public EstudiantesController(IEstudiante estudiante)
         {
@@ -31,13 +31,17 @@ namespace ADSProject.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 // Intentamos agregar el estudiante
                 int contador = this.estudiante.AgregarEstudiante(estudiante);
 
                 if (contador > 0)
                 {
                     // Si el contador es mayor que cero, la operación fue exitosa
-                    pCodRespuesta = COD_EXITO1;
+                    pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro insertado con éxito";
                 }
                 else
@@ -64,13 +68,17 @@ namespace ADSProject.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 // Actualizamos el estudiante
                 int contador = this.estudiante.ActualizarEstudiante(idEstudiante, estudiante);
 
                 if (contador > 0)
                 {
                     // Si el contador es mayor que cero, la operación fue exitosa
-                    pCodRespuesta = COD_EXITO1;
+                    pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro actualizado con éxito";
                 }
                 else
@@ -106,7 +114,7 @@ namespace ADSProject.Controllers
                     estudiante.EliminarEstudiante(idEstudiante);
 
                     // Establecemos los mensajes de éxito
-                    pCodRespuesta = COD_EXITO1;
+                    pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro eliminado con éxito";
                 }
                 else
