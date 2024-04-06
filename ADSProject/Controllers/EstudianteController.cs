@@ -10,16 +10,16 @@ namespace ADSProject.Controllers
     {
         private readonly IEstudiante estudiante;
         // Código de éxito
-        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
+        private static readonly int COD_EXITO = CodigoRespuesta.Exito;
        
-        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
+        private static readonly int COD_ERROR = CodigoRespuesta.Error;
 
       
-        private string pCodRespuesta;
+        private int pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public static string COD_EXITO1 => COD_EXITO;
+        public static int COD_EXITO1 => COD_EXITO;
 
         public EstudiantesController(IEstudiante estudiante)
         {

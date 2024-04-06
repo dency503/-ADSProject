@@ -91,6 +91,10 @@ namespace ADSProject.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var id = carreraRepository.AgregarCarrera(carrera);
                 int pCodRespuesta;
                 string pMensajeUsuario, pMensajeTecnico;
@@ -121,9 +125,13 @@ namespace ADSProject.Controllers
         }
 
 
-        [HttpPut("modificarCarrera/{id}")]
+        [HttpPut("actualizarCarrera/{id}")]
         public ActionResult<int> ActualizarCarrera(int id, [FromBody] Carrera carrera)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 int contador = carreraRepository.ActualizarCarrera(id, carrera);
