@@ -1,15 +1,15 @@
 ﻿using ADSProject.Interfaces;
 using ADSProject.Models;
+using ADSProject.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace ADSProject.Controllers
 {
-    [Route("api/profesores")]
+    [Route("api/profesores/")]
     public class ProfesoresController : ControllerBase
     {
-        private readonly IProfesor _profesor;
+        private readonly IProfesor profesor;
         private static readonly int COD_EXITO = CodigoRespuesta.Exito;
         private static readonly int COD_ERROR = CodigoRespuesta.Error;
         private int pCodRespuesta;
@@ -18,11 +18,10 @@ namespace ADSProject.Controllers
 
         public ProfesoresController(IProfesor profesor)
         {
-            _profesor = profesor;
+            this.profesor = profesor;
         }
-
         [HttpPost("agregarProfesor")]
-        public IActionResult AdicionarProfesor([FromBody] Profesor profesor)
+        public ActionResult<string> AgregarProfesor([FromBody] Profesor profesor)
         {
             try
             {
@@ -30,21 +29,19 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = _profesor.AgregarProfesor(profesor);
-
+                int contador = this.profesor.AgregarProfesor(profesor);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro insertado con éxito";
+                    pMensajeUsuario = "Registro insertado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al insertar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al insertar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -52,9 +49,8 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
         [HttpPut("actualizarProfesor/{idProfesor}")]
-        public ActionResult<string> ActualizarProfessor(int idProfesor, [FromBody] Profesor profesor)
+        public ActionResult<string> ActualizarProfesor(int idProfesor, [FromBody] Profesor profesor)
         {
             try
             {
@@ -62,21 +58,19 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = _profesor.ActualizarProfesor(idProfesor, profesor);
-
+                int contador = this.profesor.ActualizarProfesor(idProfesor, profesor);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro actualizado con sucesso";
+                    pMensajeUsuario = "Registro actualizado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrido un problema al actualizar o registro";
+                    pMensajeUsuario = "Ocurrio un problema al actualizar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -84,29 +78,24 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
         [HttpDelete("eliminarProfesor/{idProfesor}")]
         public ActionResult<string> EliminarProfesor(int idProfesor)
         {
             try
             {
-                bool eliminado = true; // Por ahora asumimos que el profesor fue eliminado correctamente
-
+                bool eliminado = this.profesor.EliminarProfesor(idProfesor);
                 if (eliminado)
                 {
-                    _profesor.EliminarProfesor(idProfesor);
-
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro eliminado con éxito";
+                    pMensajeUsuario = "Registro eliminado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al eliminar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -114,14 +103,12 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
-        [HttpGet("obtenerProfesorPorId/{idProfesor}")]
-        public ActionResult<Profesor> ObtnerProfessorPorId(int idProfesor)
+        [HttpGet("obtenerProfesorPorID/{idProfesor}")]
+        public ActionResult<string> ObtenerProfesor(int idProfesor)
         {
             try
             {
-                Profesor profesor = _profesor.ObtenerProfesorPorId(idProfesor);
-
+                Profesor profesor = this.profesor.ObtenerProfesorPorId(idProfesor);
                 if (profesor != null)
                 {
                     return Ok(profesor);
@@ -129,9 +116,8 @@ namespace ADSProject.Controllers
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos del profesor";
+                    pMensajeUsuario = "No se encontraron datos del prefesor";
                     pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
             }
@@ -140,26 +126,13 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
-        [HttpGet("obtnerProfesores")]
-        public ActionResult<List<Profesor>> ObterProfesores()
+        [HttpGet("obtenerProfesores")]
+        public ActionResult<List<Profesor>> ObtenerProfesor()
         {
             try
             {
-                List<Profesor> profesores = _profesor.ObtenerTodosLosProfesores();
-
-                if (profesores != null && profesores.Count > 0)
-                {
-                    return Ok(profesores);
-                }
-                else
-                {
-                    pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de profesores";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
-                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
-                }
+                List<Profesor> lstProfesores = this.profesor.ObtenerTodosLosProfesores();
+                return Ok(lstProfesores);
             }
             catch (Exception)
             {

@@ -1,30 +1,27 @@
 ﻿using ADSProject.Interfaces;
 using ADSProject.Models;
+using ADSProject.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace ADSProject.Controllers
 {
-    [Route("api/materias")]
-    public class MateriaController : ControllerBase
+    [Route("api/materias/")]
+    public class MateriasController : ControllerBase
     {
-        private readonly IMateria materiaRepository;
-        // Código de éxito
-        private static readonly string COD_EXITO = CodigoRespuesta.Exito.ToString();
-        // Código de error
-        private static readonly string COD_ERROR = CodigoRespuesta.Error.ToString();
-        private string pCodRespuesta;
+        private readonly IMateria materia;
+        private static readonly int COD_EXITO = CodigoRespuesta.Exito;
+        private static readonly int COD_ERROR = CodigoRespuesta.Error;
+        private int pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public MateriaController(IMateria materiaRepository)
+        public MateriasController(IMateria materia)
         {
-            this.materiaRepository = materiaRepository;
+            this.materia = materia;
         }
-
         [HttpPost("agregarMateria")]
-        public IActionResult AgregarMateria([FromBody] Materia materia)
+        public ActionResult<string> AgregarMateria([FromBody] Materia materia)
         {
             try
             {
@@ -32,97 +29,86 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = this.materiaRepository.AgregarMateria(materia);
-
+                int contador = this.materia.AgregarMateria(materia);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro insertado con éxito";
+                    pMensajeUsuario = "Registro insertado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al insertar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al insertar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
-
-        [HttpPost("actualizarMateria/{idMateria}")]
+        [HttpPut("actualizarMateria/{idMateria}")]
         public ActionResult<string> ActualizarMateria(int idMateria, [FromBody] Materia materia)
         {
             try
-
             {
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = this.materiaRepository.ActualizarMateria(idMateria, materia);
-
+                int contador = this.materia.ActualizarMateria(idMateria, materia);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro actualizado con éxito";
+                    pMensajeUsuario = "Registro actualizado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al actualizar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
-
         [HttpDelete("eliminarMateria/{idMateria}")]
         public ActionResult<string> EliminarMateria(int idMateria)
         {
             try
             {
-                bool eliminado = this.materiaRepository.EliminarMateria(idMateria);
-
+                bool eliminado = this.materia.EliminarMateria(idMateria);
                 if (eliminado)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro eliminado con éxito";
+                    pMensajeUsuario = "Registro eliminado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al eliminar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
-
         [HttpGet("obtenerMateriaPorID/{idMateria}")]
-        public ActionResult<Materia> ObtenerMateriaPorID(int idMateria)
+        public ActionResult<string> ObtenerMateria(int idMateria)
         {
             try
             {
-                Materia materia = this.materiaRepository.ObtenerMateriaPorId(idMateria);
-
+                Materia materia = this.materia.ObtenerMateriaPorId(idMateria);
                 if (materia != null)
                 {
                     return Ok(materia);
@@ -132,39 +118,25 @@ namespace ADSProject.Controllers
                     pCodRespuesta = COD_ERROR;
                     pMensajeUsuario = "No se encontraron datos de la materia";
                     pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
-
-        [HttpGet]
-        public ActionResult<List<Materia>> ObtenerMaterias()
+        [HttpGet("obtenerMaterias")]
+        public ActionResult<List<Materia>> ObtenerMateria()
         {
             try
             {
-                List<Materia> materias = this.materiaRepository.ObtenerTodasLasMaterias();
-
-                if (materias != null && materias.Count > 0)
-                {
-                    return Ok(materias);
-                }
-                else
-                {
-                    pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de materias";
-                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
-
-                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
-                }
+                List<Materia> lstMaterias = this.materia.ObtenerTodasLasMaterias();
+                return Ok(lstMaterias);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
             }
         }
     }

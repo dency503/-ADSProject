@@ -1,28 +1,27 @@
 ﻿using ADSProject.Interfaces;
 using ADSProject.Models;
+using ADSProject.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace ADSProject.Controllers
 {
-    [Route("api/grupos")]
-    public class GrupoController : ControllerBase
+    [Route("api/grupos/")]
+    public class GruposController : ControllerBase
     {
-        private readonly IGrupo _grupo;
+        private readonly IGrupo grupo;
         private static readonly int COD_EXITO = CodigoRespuesta.Exito;
         private static readonly int COD_ERROR = CodigoRespuesta.Error;
         private int pCodRespuesta;
         private string pMensajeUsuario;
         private string pMensajeTecnico;
 
-        public GrupoController(IGrupo grupo)
+        public GruposController(IGrupo grupo)
         {
-            _grupo = grupo;
+            this.grupo = grupo;
         }
-
         [HttpPost("agregarGrupo")]
-        public IActionResult AgregarGrupo([FromBody] Grupo grupo)
+        public ActionResult<string> AgregarGrupo([FromBody] Grupo grupo)
         {
             try
             {
@@ -30,21 +29,19 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = _grupo.AgregarGrupo(grupo);
-
+                int contador = this.grupo.AgregarGrupo(grupo);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro insertado con éxito";
+                    pMensajeUsuario = "Registro insertado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al insertar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al insertar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -52,9 +49,8 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
         [HttpPut("actualizarGrupo/{idGrupo}")]
-        public IActionResult ActualizarGrupo(int idGrupo, [FromBody] Grupo grupo)
+        public ActionResult<string> ActualizarGrupo(int idGrupo, [FromBody] Grupo grupo)
         {
             try
             {
@@ -62,21 +58,19 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = _grupo.ActualizarGrupo(idGrupo, grupo);
-
+                int contador = this.grupo.ActualizarGrupo(idGrupo, grupo);
                 if (contador > 0)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro actualizado con éxito";
+                    pMensajeUsuario = "Registro actualizado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al actualizar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al actualizar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -84,27 +78,24 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
         [HttpDelete("eliminarGrupo/{idGrupo}")]
-        public IActionResult EliminarGrupo(int idGrupo)
+        public ActionResult<string> EliminarGrupo(int idGrupo)
         {
             try
             {
-                bool eliminado = _grupo.EliminarGrupo(idGrupo);
-
+                bool eliminado = this.grupo.EliminarGrupo(idGrupo);
                 if (eliminado)
                 {
                     pCodRespuesta = COD_EXITO;
-                    pMensajeUsuario = "Registro eliminado con éxito";
+                    pMensajeUsuario = "Registro eliminado con exito";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
                 else
                 {
                     pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "Ocurrió un problema al eliminar el registro";
+                    pMensajeUsuario = "Ocurrio un problema al eliminar el registro";
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                 }
-
-                pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
-
                 return Ok(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
             }
             catch (Exception)
@@ -112,14 +103,12 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
-        [HttpGet("obtenerGrupoPorId/{idGrupo}")]
-        public IActionResult ObtenerGrupoPorId(int idGrupo)
+        [HttpGet("obtenerGrupoPorID/{idGrupo}")]
+        public ActionResult<string> ObtenerGrupo(int idGrupo)
         {
             try
             {
-                Grupo grupo = _grupo.ObtenerGrupoPorId(idGrupo);
-
+                Grupo grupo = this.grupo.ObtenerGrupoPorId(idGrupo);
                 if (grupo != null)
                 {
                     return Ok(grupo);
@@ -128,8 +117,7 @@ namespace ADSProject.Controllers
                 {
                     pCodRespuesta = COD_ERROR;
                     pMensajeUsuario = "No se encontraron datos del grupo";
-                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
-
+                    pMensajeTecnico = pCodRespuesta + " || " + pMensajeUsuario;
                     return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
                 }
             }
@@ -138,26 +126,13 @@ namespace ADSProject.Controllers
                 throw;
             }
         }
-
-        [HttpGet()]
-        public IActionResult ObtenerTodosLosGrupos()
+        [HttpGet("obtenerGrupos")]
+        public ActionResult<List<Grupo>> ObtenerGrupo()
         {
             try
             {
-                List<Grupo> grupos = _grupo.ObtenerTodosLosGrupos();
-
-                if (grupos != null && grupos.Count > 0)
-                {
-                    return Ok(grupos);
-                }
-                else
-                {
-                    pCodRespuesta = COD_ERROR;
-                    pMensajeUsuario = "No se encontraron datos de grupos";
-                    pMensajeTecnico = $"{pCodRespuesta} || {pMensajeUsuario}";
-
-                    return NotFound(new { pCodRespuesta, pMensajeUsuario, pMensajeTecnico });
-                }
+                List<Grupo> lstGrupos = this.grupo.ObtenerTodosLosGrupos();
+                return Ok(lstGrupos);
             }
             catch (Exception)
             {

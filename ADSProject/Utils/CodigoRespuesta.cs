@@ -1,4 +1,4 @@
-﻿namespace ADSProject
+﻿namespace ADSProject.Utils
 {
     public static class CodigoRespuesta
     {
