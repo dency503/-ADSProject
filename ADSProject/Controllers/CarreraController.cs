@@ -1,4 +1,5 @@
 ﻿using ADSProject.Interfaces;
+using ADSProject.Interfaces;
 using ADSProject.Models;
 using ADSProject.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -57,8 +58,8 @@ namespace ADSProject.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                int contador = this.carrera.ActualizarCarrera(id, carrera);
-                if (contador > 0)
+                bool contador = this.carrera.ActualizarCarrera(id, carrera);
+                if (contador )
                 {
                     pCodRespuesta = COD_EXITO;
                     pMensajeUsuario = "Registro actualizado con exito";

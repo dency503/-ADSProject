@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+[PrimaryKey(nameof(IdCarrera))]
 public class Carrera
 {
-    public int Id { get; set; }
+    public int IdCarrera { get; set; }
 
     [Required(ErrorMessage = "Este campo es requerido.")]
     [MaxLength(3, ErrorMessage = "La longitud no debe ser mayor a 3 caracteres.")]

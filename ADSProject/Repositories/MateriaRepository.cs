@@ -1,60 +1,129 @@
-﻿namespace ADSProject.Repositories
-{
-    using ADSProject.Interfaces;
-    using ADSProject.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using ADSProject.DB;
+using ADSProject.Interfaces;
+using ADSProject.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace ADSProject.Repositories
+{
     public class MateriaRepository : IMateria
     {
-        private List<Materia> materias = new List<Materia>();
+        private readonly ApplicationDbContext applicationDbContext;
 
-        public MateriaRepository()
+        public MateriaRepository(ApplicationDbContext context)
         {
-            // Agregar algunas materias por defecto al inicializar el repositorio
-            AgregarMateria(new Materia { IdMateria = 1, NombreMateria = "Matemáticas" });
-            AgregarMateria(new Materia { IdMateria = 2, NombreMateria = "Ciencias" });
+            applicationDbContext = context;
+
+           
         }
 
         public int AgregarMateria(Materia materia)
         {
-            materia.IdMateria = materias.Count + 1;
-            materias.Add(materia);
-            return materia.IdMateria;
+            try
+            {
+                // Agregar la nueva materia al contexto de la base de datos
+                applicationDbContext.Materias.Add(materia);
+
+                // Guardar los cambios en la base de datos
+                applicationDbContext.SaveChanges();
+
+                // Devolver el ID de la materia agregada
+                return materia.IdMateria;
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción lanzada
+                throw ex;
+            }
         }
 
         public int ActualizarMateria(int idMateria, Materia materia)
         {
-            Materia materiaExistente = ObtenerMateriaPorId(idMateria);
-            if (materiaExistente != null)
+            try
             {
-                materiaExistente.NombreMateria = materia.NombreMateria;
-                return 1; // Indica éxito en la actualización
+                // Obtener la materia existente por su ID
+                var materiaExistente = applicationDbContext.Materias.SingleOrDefault(m => m.IdMateria == idMateria);
+
+                if (materiaExistente != null)
+                {
+                    // Actualizar los valores de la materia existente con los valores de la materia proporcionada
+                    materiaExistente.NombreMateria = materia.NombreMateria;
+
+                    // Guardar los cambios en la base de datos
+                    applicationDbContext.SaveChanges();
+
+                    return 1; // Indica éxito en la actualización
+                }
+                else
+                {
+                    return 0; // Indica que no se encontró la materia con el ID especificado
+                }
             }
-            return 0; // Indica que no se encontró la materia con el ID especificado
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción lanzada
+                throw ex;
+            }
         }
 
         public bool EliminarMateria(int idMateria)
         {
-            Materia materiaExistente = ObtenerMateriaPorId(idMateria);
-            if (materiaExistente != null)
+            try
             {
-                materias.Remove(materiaExistente);
-                return true; // Indica éxito en la eliminación
+                // Obtener la materia por su ID
+                var materia = applicationDbContext.Materias.SingleOrDefault(m => m.IdMateria == idMateria);
+
+                if (materia != null)
+                {
+                    // Eliminar la materia del contexto de la base de datos
+                    applicationDbContext.Materias.Remove(materia);
+
+                    // Guardar los cambios en la base de datos
+                    applicationDbContext.SaveChanges();
+
+                    return true; // Indica éxito en la eliminación
+                }
+                else
+                {
+                    return false; // Indica que no se encontró la materia con el ID especificado
+                }
             }
-            return false; // Indica que no se encontró la materia con el ID especificado
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción lanzada
+                throw ex;
+            }
         }
 
         public List<Materia> ObtenerTodasLasMaterias()
         {
-            return materias;
+            try
+            {
+                // Obtener todas las materias desde el contexto de la base de datos
+                var materias = applicationDbContext.Materias.ToList();
+                return materias;
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción lanzada
+                throw ex;
+            }
         }
 
         public Materia ObtenerMateriaPorId(int idMateria)
         {
-            return materias.FirstOrDefault(m => m.IdMateria == idMateria);
+            try
+            {
+                // Obtener la materia por su ID desde el contexto de la base de datos
+                var materia = applicationDbContext.Materias.SingleOrDefault(x => x.IdMateria == idMateria);
+                return materia;
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier excepción lanzada
+                throw ex;
+            }
         }
     }
-
 }

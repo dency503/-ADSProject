@@ -1,67 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ADSProject.DB;
 using ADSProject.Interfaces;
 using ADSProject.Models;
 
 public class CarreraRepository : ICarrera
 {
-    private List<Carrera> carreras = new List<Carrera>();
+    private readonly ApplicationDbContext applicationDbContext;
 
-    public CarreraRepository()
+    public CarreraRepository(ApplicationDbContext context)
     {
-        // Agregar una carrera por defecto al inicializar el repositorio
-        AgregarCarreraPorDefecto();
+        applicationDbContext = context;
+
+   
     }
 
-    private void AgregarCarreraPorDefecto()
-    {
-        Carrera carreraPorDefecto = new Carrera
-        {
-            Id = 1,
-            Codigo = "I004",
-            Nombre = "Ingeneria de sistema"
-        };
-        carreras.Add(carreraPorDefecto);
-    }
 
     public int AgregarCarrera(Carrera carrera)
     {
-        carrera.Id = carreras.Count + 1;
-        carreras.Add(carrera);
-        return carrera.Id;
+        try
+        {
+            // Agregar la nueva carrera al contexto de la base de datos
+            applicationDbContext.Carreras.Add(carrera);
+
+            // Guardar los cambios en la base de datos
+            applicationDbContext.SaveChanges();
+
+            // Devolver el ID de la carrera agregada
+            return carrera.IdCarrera;
+        }
+        catch (Exception ex)
+        {
+            // Manejar cualquier excepción lanzada
+            throw ex;
+        }
     }
 
-    public int ActualizarCarrera(int idCarrera, Carrera carrera)
+    public bool ActualizarCarrera(int idCarrera, Carrera carrera)
     {
-        Carrera carreraExistente = ObtenerCarreraPorId(idCarrera);
-        if (carreraExistente != null)
+        try
         {
-            carreraExistente.Codigo = carrera.Codigo;
-            carreraExistente.Nombre = carrera.Nombre;
-            return 1; // Indica éxito en la actualización
+            // Obtener la carrera existente por su ID
+            var carreraExistente = applicationDbContext.Carreras.SingleOrDefault(c => c.IdCarrera == idCarrera);
+
+
+            if (carreraExistente != null)
+            {
+                // Actualizar los valores de la carrera existente con los valores de la carrera proporcionada
+                carreraExistente.Codigo = carrera.Codigo;
+                carreraExistente.Nombre = carrera.Nombre;
+
+                // Guardar los cambios en la base de datos
+                applicationDbContext.SaveChanges();
+
+                return true; // Indica éxito en la actualización
+            }
+            else
+            {
+                return false; // Indica que no se encontró la carrera con el ID especificado
+            }
         }
-        return 0; // Indica que no se encontró la carrera con el ID especificado
+        catch (Exception ex)
+        {
+            // Manejar cualquier excepción lanzada
+            throw ex;
+        }
     }
 
     public bool EliminarCarrera(int idCarrera)
     {
-        Carrera carreraExistente = ObtenerCarreraPorId(idCarrera);
-        if (carreraExistente != null)
+        try
         {
-            carreras.Remove(carreraExistente);
-            return true; // Indica éxito en la eliminación
+            // Obtener la carrera por su ID
+            var carrera = applicationDbContext.Carreras.SingleOrDefault(c => c.IdCarrera == idCarrera);
+
+
+            if (carrera != null)
+            {
+                // Eliminar la carrera del contexto de la base de datos
+                applicationDbContext.Carreras.Remove(carrera);
+
+                // Guardar los cambios en la base de datos
+                applicationDbContext.SaveChanges();
+
+                return true; // Indica éxito en la eliminación
+            }
+            else
+            {
+                return false; // Indica que no se encontró la carrera con el ID especificado
+            }
         }
-        return false; // Indica que no se encontró la carrera con el ID especificado
+        catch (Exception ex)
+        {
+            // Manejar cualquier excepción lanzada
+            throw ex;
+        }
     }
 
     public List<Carrera> ObtenerTodasLasCarreras()
     {
-        return carreras;
+        try
+        {
+            // Obtener todas las carreras desde el contexto de la base de datos
+            var carreras = applicationDbContext.Carreras.ToList();
+            return carreras;
+        }
+        catch (Exception ex)
+        {
+            // Manejar cualquier excepción lanzada
+            throw ex;
+        }
     }
 
     public Carrera ObtenerCarreraPorId(int idCarrera)
     {
-        return carreras.FirstOrDefault(c => c.Id == idCarrera);
+        try
+        {
+            // Obtener la carrera por su ID desde el contexto de la base de datos
+            var carrera = applicationDbContext.Carreras.SingleOrDefault(c => c.IdCarrera == idCarrera);
+
+            return carrera;
+        }
+        catch (Exception ex)
+        {
+            // Manejar cualquier excepción lanzada
+            throw ex;
+        }
     }
 }

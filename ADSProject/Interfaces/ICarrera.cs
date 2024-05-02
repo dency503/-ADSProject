@@ -8,7 +8,7 @@ namespace ADSProject.Interfaces
         int AgregarCarrera(Carrera carrera);
 
         // Método para actualizar una carrera
-        int ActualizarCarrera(int idCarrera, Carrera carrera);
+        bool ActualizarCarrera(int idCarrera, Carrera carrera);
 
         // Método para eliminar una carrera
         bool EliminarCarrera(int idCarrera);

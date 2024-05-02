@@ -1,10 +1,11 @@
 ﻿
 
-    using System.ComponentModel.DataAnnotations;
-
-    namespace ADSProject.Models
-    {
-        public class Profesor
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+namespace ADSProject.Models
+{
+    [PrimaryKey(nameof(IdProfesor))]
+    public class Profesor
         {
             public int IdProfesor { get; set; }
 
