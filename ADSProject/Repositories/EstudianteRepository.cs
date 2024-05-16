@@ -19,6 +19,13 @@ namespace ADSProject.Repositories
             }
         };*/
         private readonly ApplicationDbContext applicationDbContext;
+        public EstudianteRepository(ApplicationDbContext context)
+        {
+            applicationDbContext = context;
+
+
+        }
+
 
         public int ActualizarEstudiante(int idEstudiante, Estudiante estudiante)
         {
